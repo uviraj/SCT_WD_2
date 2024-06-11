@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Stopwatch</title>
+  <style>
+    
+    body {
+             
+     
+
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-image: url('D:/Games/try/wp3989698.jpg');
+  background-repeat: no-repeat;
+    }
+
+    #stopwatch {
+      font-size: 4em;
+      padding: 20px;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+      background-color: #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 5px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #lap-list {
+      margin-top: 20px;
+      list-style: none;
+      padding: 0;
+    }
+
+    #lap-list li {
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div id="stopwatch">00:00:00</div>
+
+  <button id="start">Start</button>
+  <button id="pause">Pause</button>
+  <button id="reset">Reset</button>
+
+  <ul id="lap-list"></ul>
+
+  <script>
+    let startTime = 0;
+    let intervalId;
+    let lapTimes = [];
+
+    const stopwatchDisplay = document.getElementById("stopwatch");
+    const startButton = document.getElementById("start");
+    const pauseButton = document.getElementById("pause");
+    const resetButton = document.getElementById("reset");
+    const lapList = document.getElementById("lap-list");
+
+    startButton.addEventListener("click", startTimer);
+    pauseButton.addEventListener("click", pauseTimer);
+    resetButton.addEventListener("click", resetTimer);
+
+    function startTimer() {
+      startTime = new Date().getTime();
+      intervalId = setInterval(updateTimer, 10);
+      startButton.disabled = true;
+      pauseButton.disabled = false;
+      resetButton.disabled = false;
+    }
+
+    function pauseTimer() {
+      clearInterval(intervalId);
+      startButton.disabled = false;
+      pauseButton.disabled = true;
+    }
+
+    function resetTimer() {
+      clearInterval(intervalId);
+      startTime = 0;
+      stopwatchDisplay.textContent = "00:00:00";
+      lapTimes = [];
+      lapList.innerHTML = "";
+      startButton.disabled = false;
+      pauseButton.disabled = true;
+      resetButton.disabled = true;
+    }
+
+    function updateTimer() {
+      const elapsedTime = new Date().getTime() - startTime;
+      const minutes = Math.floor((elapsedTime / (1000 * 60)) % 60);
+      const seconds = Math.floor((elapsedTime / 1000) % 60);
+      const milliseconds = Math.floor(elapsedTime % 1000);
+
+      stopwatchDisplay.textContent = `${pad(minutes)}:${pad(seconds)}:${pad(milliseconds)}`;
+    }
+
+    function pad(num) {
+      return num.toString().padStart(2, "0");
+    }
+
+    // Add lap time functionality
+    document.addEventListener("keydown", function(event) {
+      if (event.code === "Space" && intervalId) {
+        addLapTime();
+      }
+    });
+
+    function addLapTime() {
+      const elapsedTime = new Date().getTime() - startTime;
+      const minutes = Math.floor((elapsedTime / (1000 * 60)) % 60);
+      const seconds = Math.floor((elapsedTime / 1000) % 60);
+      const milliseconds = Math.floor(elapsedTime % 1000);
+
+      lapTimes.push(`${pad(minutes)}:${pad(seconds)}:${pad(milliseconds)}`);
+      updateLapList();
+    }
+
+    function updateLapList() {
+      lapList.innerHTML = ""; // Clear the list
+      lapTimes.forEach((time, index) => {
+        const lapItem = document.createElement("li");
+        lapItem.textContent = `Lap ${index + 1}: ${time}`;
+        lapList.appendChild(lapItem);
+      });
+    }
+  </script>
+</body>
+</html>
